@@ -18,8 +18,6 @@ const axiosInstance = axios.create({
     language: 'en-US',
   },
 });
-
-// Запит на отримання популярних фільмів
 // Запит на отримання популярних фільмів
 export const fetchTrendingMovies = async () => {
   try {
