@@ -18,39 +18,39 @@ const axiosInstance = axios.create({
     language: 'en-US',
   },
 });
-// Запит на отримання популярних фільмів
+
+// Запит на отримання популярних фільмів (повертає масив)
 export const fetchTrendingMovies = async () => {
   try {
-    const response = await axiosInstance.get('/trending/movie/day?language=en-US');
-    return response.data;
+    const response = await axiosInstance.get('/trending/movie/day');
+    return response.data.results;
   } catch (error) {
     console.error('Error fetching trending movies:', error);
-    throw error;  // Можна додати додаткову логіку, як-от показати користувачу повідомлення
+    throw error;
   }
 };
 
-// Пошук фільму за запитом
+// Пошук фільму за запитом (повертає масив)
 export const searchMovies = async (query) => {
   try {
     const response = await axiosInstance.get('/search/movie', {
       params: {
         query,
         include_adult: false,
-        language: 'en-US',
         page: 1,
       },
     });
-    return response.data;
+    return response.data.results;
   } catch (error) {
     console.error('Error searching movies:', error);
     throw error;
   }
 };
 
-// Отримання подробиць про фільм
+// Отримання подробиць про фільм (повертає об'єкт)
 export const fetchMovieDetails = async (movieId) => {
   try {
-    const response = await axiosInstance.get(`/movie/${movieId}?language=en-US`);
+    const response = await axiosInstance.get(`/movie/${movieId}`);
     return response.data;
   } catch (error) {
     console.error('Error fetching movie details:', error);
@@ -58,10 +58,10 @@ export const fetchMovieDetails = async (movieId) => {
   }
 };
 
-// Отримання акторського складу фільму
+// Отримання акторського складу фільму (повертає об'єкт)
 export const fetchMovieCredits = async (movieId) => {
   try {
-    const response = await axiosInstance.get(`/movie/${movieId}/credits?language=en-US`);
+    const response = await axiosInstance.get(`/movie/${movieId}/credits`);
     return response.data;
   } catch (error) {
     console.error('Error fetching movie credits:', error);
@@ -69,16 +69,13 @@ export const fetchMovieCredits = async (movieId) => {
   }
 };
 
-// Отримання оглядів фільму
+// Отримання оглядів фільму (повертає об'єкт)
 export const fetchMovieReviews = async (movieId) => {
   try {
-    const response = await axiosInstance.get(`/movie/${movieId}/reviews?language=en-US`);
+    const response = await axiosInstance.get(`/movie/${movieId}/reviews`);
     return response.data;
   } catch (error) {
     console.error('Error fetching movie reviews:', error);
     throw error;
   }
 };
-
-
-

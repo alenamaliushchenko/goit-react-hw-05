@@ -6,6 +6,7 @@ import './App.css'
 
 const HomePage = lazy(() => import('./pages/HomePage'));
 const MoviesPage = lazy(() => import('./pages/MoviesPage'));
+const MovieList = lazy(() => import('./components/MovieList'));
 const MovieDetailsPage = lazy(() => import('./pages/MovieDetailsPage'));
 const MovieReviews = lazy(() => import('./components/MovieReviews'));
 const MovieCast = lazy(() => import('./components/MovieCast'));
@@ -20,6 +21,7 @@ function App() {
       <Suspense fallback={<div className="loader">Завантаження...</div>}>
         <Routes>
           <Route path="/" element={ <HomePage />} />
+          <Route path="movieList" element={ <MovieList />} />
           <Route path="/movies" element={ <MoviesPage />} />
           <Route path="/movies/:movieId" element={ <MovieDetailsPage/> }>
             <Route path="cast" element={ <MovieCast/>} />

@@ -1,8 +1,8 @@
 import { useState, useEffect } from 'react';
+import { useSearchParams } from 'react-router-dom';
 import { searchMovies } from '../api/tmdbApi';
 import { Link } from 'react-router-dom';
 
-// Хук для debounce
 const useDebounce = (value, delay) => {
   const [debouncedValue, setDebouncedValue] = useState(value);
 
@@ -21,36 +21,43 @@ const useDebounce = (value, delay) => {
 
 function MoviesPage() {
   const [movies, setMovies] = useState([]);
-  const [query, setQuery] = useState(''); // Для пошуку фільму
   const [loading, setLoading] = useState(false);
-  const [noResults, setNoResults] = useState(false); // Для перевірки, чи знайдено фільми
+  const [noResults, setNoResults] = useState(false);
 
-  // Використовуємо debounce для уникнення надмірних запитів
-  const debouncedQuery = useDebounce(query, 500); // Затримка в 500 мс
+  const [searchParams, setSearchParams] = useSearchParams();
+  const query = searchParams.get('query') || '';
+  const debouncedQuery = useDebounce(query, 500);
+
+  const handleInputChange = (e) => {
+    const newQuery = e.target.value.trim();
+    setSearchParams(newQuery ? { query: newQuery } : {}); // оновлюємо параметри URL
+  };
 
   useEffect(() => {
-    if (debouncedQuery) {
-      setLoading(true);
-      setNoResults(false); // Скидаємо помилку на початку нового пошуку
-
-      searchMovies(debouncedQuery)
-        .then(data => {
-          if (data.results.length === 0) {
-            setNoResults(true); // Якщо результатів немає, показуємо повідомлення
-            setMovies([]);
-          } else {
-            setMovies(data.results);
-          }
-        })
-        .catch(err => {
-          console.error('Error:', err);
-          setNoResults(true); // Якщо сталася помилка, показуємо повідомлення
-        })
-        .finally(() => setLoading(false));
-    } else {
-      setMovies([]); // Очищаємо список, якщо пошуковий запит порожній
-      setNoResults(false); // Скидаємо повідомлення про відсутність результатів
+    if (!debouncedQuery) {
+      setMovies([]);
+      setNoResults(false);
+      return;
     }
+
+    setLoading(true);
+    setNoResults(false);
+
+    searchMovies(debouncedQuery)
+      .then(data => {
+        if (data.results.length === 0) {
+          setNoResults(true);
+          setMovies([]);
+        } else {
+          setMovies(data.results);
+        }
+      })
+      .catch(err => {
+        console.error('Error:', err);
+        setNoResults(true);
+        setMovies([]);
+      })
+      .finally(() => setLoading(false));
   }, [debouncedQuery]);
 
   return (
@@ -59,7 +66,7 @@ function MoviesPage() {
         type="text"
         placeholder="Search movies"
         value={query}
-        onChange={(e) => setQuery(e.target.value)}
+        onChange={handleInputChange}
         aria-label="Search for movies"
       />
       {loading && <p>Loading...</p>}
@@ -80,4 +87,5 @@ const MovieList = ({ movies }) => {
     </ul>
   );
 };
+
 export default MoviesPage;

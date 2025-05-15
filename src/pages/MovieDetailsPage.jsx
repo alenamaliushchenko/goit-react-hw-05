@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import { useParams, Outlet, Link, useLocation, useNavigate } from 'react-router-dom';
 import { fetchMovieDetails } from '../api/tmdbApi';
 
@@ -6,14 +6,14 @@ export default function MovieDetailsPage() {
   const { movieId } = useParams();
   const location = useLocation();
   const navigate = useNavigate();
-  const backLink = location.state?.from || '/movies';
 
-  // 1. Стани для даних фільму
-  const [movie, setMovie]     = useState(null);
+  // ✅ Використання useRef для збереження backLink
+  const backLinkRef = useRef(location.state?.from || '/movies');
+
+  const [movie, setMovie] = useState(null);
   const [loading, setLoading] = useState(true);
-  const [error, setError]     = useState(null);
+  const [error, setError] = useState(null);
 
-  // 2. useEffect, який підтягне дані
   useEffect(() => {
     const getMovie = async () => {
       try {
@@ -30,12 +30,10 @@ export default function MovieDetailsPage() {
     getMovie();
   }, [movieId]);
 
-  // 3. Відображення станів
   if (loading) return <p>Завантаження фільму...</p>;
-  if (error)   return <p>{error}</p>;
-  if (!movie)  return <p>Фільм не знайдено.</p>;
+  if (error) return <p>{error}</p>;
+  if (!movie) return <p>Фільм не знайдено.</p>;
 
-  // 4. Рендер даних
   const { title, overview, release_date, vote_average, poster_path } = movie;
   const posterUrl = poster_path
     ? `https://image.tmdb.org/t/p/w500${poster_path}`
@@ -43,12 +41,12 @@ export default function MovieDetailsPage() {
 
   return (
     <div>
-      <button onClick={() => navigate(backLink)}>← Go back</button>
+      <button onClick={() => navigate(backLinkRef.current)}>← Go back</button>
 
       <div style={{ display: 'flex', gap: '20px', marginTop: '20px' }}>
         <img src={posterUrl} alt={title} width="250" />
         <div>
-          <h1>{title} ({release_date.slice(0,4)})</h1>
+          <h1>{title} ({release_date?.slice(0, 4)})</h1>
           <p><strong>Рейтинг:</strong> {vote_average}</p>
           <h2>Опис</h2>
           <p>{overview}</p>
@@ -58,10 +56,10 @@ export default function MovieDetailsPage() {
       <hr />
 
       <nav>
-        <Link to="cast" state={{ from: backLink }} style={{ marginRight: '15px' }}>
+        <Link to="cast" state={{ from: backLinkRef.current }} style={{ marginRight: '15px' }}>
           Акторський склад
         </Link>
-        <Link to="reviews" state={{ from: backLink }}>
+        <Link to="reviews" state={{ from: backLinkRef.current }}>
           Відгуки
         </Link>
       </nav>
