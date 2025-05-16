@@ -21,7 +21,6 @@ function App() {
       <Suspense fallback={<div className="loader">Завантаження...</div>}>
         <Routes>
           <Route path="/" element={ <HomePage />} />
-          <Route path="movieList" element={ <MovieList />} />
           <Route path="/movies" element={ <MoviesPage />} />
           <Route path="/movies/:movieId" element={ <MovieDetailsPage/> }>
             <Route path="cast" element={ <MovieCast/>} />

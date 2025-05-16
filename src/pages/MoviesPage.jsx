@@ -1,7 +1,8 @@
 import { useState, useEffect } from 'react';
 import { useSearchParams } from 'react-router-dom';
 import { searchMovies } from '../api/tmdbApi';
-import { Link } from 'react-router-dom';
+import MovieList from '../components/MovieList';
+
 
 const useDebounce = (value, delay) => {
   const [debouncedValue, setDebouncedValue] = useState(value);
@@ -76,16 +77,5 @@ function MoviesPage() {
   );
 }
 
-const MovieList = ({ movies }) => {
-  return (
-    <ul>
-      {movies.map(movie => (
-        <li key={movie.id}>
-          <Link to={`/movies/${movie.id}`}>{movie.title}</Link>
-        </li>
-      ))}
-    </ul>
-  );
-};
 
 export default MoviesPage;
