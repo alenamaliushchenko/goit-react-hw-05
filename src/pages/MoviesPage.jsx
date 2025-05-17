@@ -1,7 +1,7 @@
 import { useState, useEffect } from 'react';
 import { useSearchParams } from 'react-router-dom';
 import { searchMovies } from '../api/tmdbApi';
-import MovieList from '../components/MovieList';
+import MovieList from '../components/MovieList.jsx';
 
 
 const useDebounce = (value, delay) => {
@@ -45,12 +45,12 @@ function MoviesPage() {
     setNoResults(false);
 
     searchMovies(debouncedQuery)
-      .then(data => {
-        if (data.results.length === 0) {
+      .then(results => {
+        if (!Array.isArray(results) || results.length === 0) {
           setNoResults(true);
           setMovies([]);
         } else {
-          setMovies(data.results);
+          setMovies(results);
         }
       })
       .catch(err => {
